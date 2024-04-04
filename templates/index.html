@@ -5,24 +5,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Client Server Communication</title>
+    <title>Client-Server Communication</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-
-<div class="container">
-    <h1>Client Server Communication</h1>
+    <h1>Client-Server Communication</h1>
     <form id="messageForm">
-        <label for="message">Enter Message:</label>
-        <input type="text" id="message" name="message" required>
+        <label for="message">Message:</label>
+        <input type="text" id="message" name="message">
         <button type="submit">Send Message</button>
     </form>
-    <div class="response" id="responseContainer">
-        <p><strong>Server Response:</strong> <span id="response"></span></p>
-    </div>
-</div>
+    <div id="result"></div>
 
-<script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script>
+        document.getElementById('messageForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            var messageInput = document.getElementById('message');
+            var message = messageInput.value;
 
+            fetch('/send-message', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ message: message })
+            })
+            .then(response => response.json())
+            .then(data => {
+                var resultDiv = document.getElementById('result');
+                resultDiv.innerText = 'Latency: ' + data.latency + ' ms';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
 </body>
 </html>
